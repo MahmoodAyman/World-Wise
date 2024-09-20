@@ -1,77 +1,70 @@
-// import styles from "./City.module.css";
+import styles from "./City.module.css";
 
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useCities } from "../contexts/CitiesContexts";
+import { useEffect } from "react";
+import ButtonBack from "./ButtonBack";
 
-// const formatDate = (date) =>
-//   new Intl.DateTimeFormat("en", {
-//     day: "numeric",
-//     month: "long",
-//     year: "numeric",
-//     weekday: "long",
-//   }).format(new Date(date));
+const formatDate = (date) =>
+  new Intl.DateTimeFormat("en", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    weekday: "long",
+  }).format(new Date(date));
 
 function City() {
   const { id } = useParams();
-  const [searchParams, SetSearchParams] = useSearchParams();
-  const lat = searchParams.get("lat");
-  const lng = searchParams.get("lng");
-
-  // TEMP DATA
-  // const currentCity = {
-  //   cityName: "Lisbon",
-  //   emoji: "🇵🇹",
-  //   date: "2027-10-31T15:59:59.138Z",
-  //   notes: "My favorite city so far!",
-  // };
-
-  // const { cityName, emoji, date, notes } = currentCity;
-  return (
-    <>
-      <h1>City {id}</h1>
-      <p>
-        {lat} {lng}
-      </p>
-      <button onClick={()=> SetSearchParams({lat:23 , lng:50})}>Change Position</button>
-    </>
+  const { getCity , currentCity} = useCities();
+  // const [searchParams, SetSearchParams] = useSearchParams();
+  // const lat = searchParams.get("lat");
+  // const lng = searchParams.get("lng");
+  useEffect(
+    function () {
+      getCity(id);
+    },
+    [id , getCity]
   );
 
-  // return (
-  //   <div className={styles.city}>
-  //     <div className={styles.row}>
-  //       <h6>City name</h6>
-  //       <h3>
-  //         <span>{emoji}</span> {cityName}
-  //       </h3>
-  //     </div>
+  const { cityName, emoji, date, notes } = currentCity;
 
-  //     <div className={styles.row}>
-  //       <h6>You went to {cityName} on</h6>
-  //       <p>{formatDate(date || null)}</p>
-  //     </div>
+  return (
+    <div className={styles.city}>
+      <div className={styles.row}>
+        <h6>City name</h6>
+        <h3>
+          <span>{emoji}</span> {cityName}
+        </h3>
+      </div>
 
-  //     {notes && (
-  //       <div className={styles.row}>
-  //         <h6>Your notes</h6>
-  //         <p>{notes}</p>
-  //       </div>
-  //     )}
+      <div className={styles.row}>
+        <h6>You went to {cityName} on</h6>
+        <p>{formatDate(date || null)}</p>
+      </div>
 
-  //     <div className={styles.row}>
-  //       <h6>Learn more</h6>
-  //       <a
-  //         href={`https://en.wikipedia.org/wiki/${cityName}`}
-  //         target="_blank"
-  //         rel="noreferrer"
-  //       >
-  //         Check out {cityName} on Wikipedia &rarr;
-  //       </a>
-  //     </div>
+      {notes && (
+        <div className={styles.row}>
+          <h6>Your notes</h6>
+          <p>{notes}</p>
+        </div>
+      )}
 
-  //     <div>
-  //       <ButtonBack />
-  //     </div>
-  //   </div>
-  // );
+      <div className={styles.row}>
+        <h6>Learn more</h6>
+        <a
+          href={`https://en.wikipedia.org/wiki/${cityName}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Check out {cityName} on Wikipedia &rarr;
+        </a>
+      </div>
+
+      <div>
+        <ButtonBack/>
+      </div>
+    </div>
+  );
 }
 
 export default City;
