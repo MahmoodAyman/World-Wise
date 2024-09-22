@@ -1,7 +1,7 @@
 import styles from "./City.module.css";
 
 import { useParams } from "react-router-dom";
-import { useCities } from "../contexts/CitiesContexts";
+import { useCities } from "../contexts/CitiesContext";
 import { useEffect } from "react";
 import ButtonBack from "./ButtonBack";
 
