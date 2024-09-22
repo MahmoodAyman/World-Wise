@@ -1,9 +1,4 @@
-import {
-  createContext,
-  useEffect,
-  useContext,
-  useReducer,
-} from "react";
+import { createContext, useEffect, useContext, useReducer } from "react";
 
 const URL = "http://localhost:8000";
 const CitiesContext = createContext();
@@ -34,12 +29,14 @@ function reducer(state, action) {
         ...state,
         isLoading: false,
         cities: [...state.cities, action.payload],
+        currentCity: action.payload,
       };
     case "city/deleted":
       return {
         ...state,
         isLoading: false,
         cities: state.cities.filter((city) => city.id !== action.payload),
+        currentCity: {},
       };
     case "rejected":
       return {
@@ -53,7 +50,7 @@ function reducer(state, action) {
   }
 }
 function CitiesProvider({ children }) {
-  const [{ cities, isLoading, currentCity }, dispatch] = useReducer(
+  const [{ cities, isLoading, currentCity, error }, dispatch] = useReducer(
     reducer,
     initialState
   );
@@ -75,6 +72,7 @@ function CitiesProvider({ children }) {
   }, []);
 
   async function getCity(id) {
+    if (Number(id) === currentCity.id) return;
     dispatch({ type: "loading" });
     try {
       const res = await fetch(`${URL}/cities/${id}`);
@@ -88,7 +86,7 @@ function CitiesProvider({ children }) {
     }
   }
   async function createCity(newCity) {
-    dispatch({type:"loading"});
+    dispatch({ type: "loading" });
     try {
       const res = await fetch(`${URL}/cities`, {
         method: "POST",
@@ -107,7 +105,7 @@ function CitiesProvider({ children }) {
     }
   }
   async function deleteCity(id) {
-    dispatch({type:"loading"})
+    dispatch({ type: "loading" });
     try {
       await fetch(`${URL}/cities/${id}`, {
         method: "DELETE",
@@ -126,6 +124,7 @@ function CitiesProvider({ children }) {
         cities,
         isLoading,
         currentCity,
+        error,
         getCity,
         createCity,
         deleteCity,
@@ -139,7 +138,7 @@ function CitiesProvider({ children }) {
 function useCities() {
   const context = useContext(CitiesContext);
   if (context === undefined)
-    throw new Error("CitiesContext was used outside the CitiesProvider");
+    throw new Error("Cities Context was used outside the CitiesProvider");
   return context;
 }
 export { CitiesProvider, useCities };
